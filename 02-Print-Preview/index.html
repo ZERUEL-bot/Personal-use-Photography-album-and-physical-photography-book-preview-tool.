@@ -227,7 +227,7 @@
       </div>
     </div>
     <p class="edit-hint">
-      <span class="edit-tip" id="editTip">点击选中文字或图案 · 双击改写 · 拖动移动</span>
+      <span class="edit-tip" id="editTip">点击选中文字或图案 · 双击改写 · 拖动移动（靠近辅助线自动吸附）</span>
       <span class="edit-status" id="editStatus" role="status">未保存</span>
     </p>
     <div class="edit-actions">
@@ -235,8 +235,26 @@
       <button class="edit-action" id="editReset" type="button" title="重置所选元素；未选中时重置全部">↺ 重置</button>
       <button class="edit-action edit-action--ornament" id="editOrnamentBtn" type="button" aria-expanded="false" aria-controls="editOrnamentPanel">＋ 装饰</button>
       <button class="edit-action" id="editDelete" type="button" title="删除选中的新增装饰（Delete）" disabled>🗑 删除</button>
+      <button class="edit-action" id="editOverview" type="button" title="按页查看文字与照片，快速换页">🗂 总览</button>
       <button class="edit-action edit-action--save" id="editSave" type="button">💾 保存修改</button>
       <button class="edit-action" id="editDone" type="button">完成</button>
+    </div>
+  </div>
+
+  <div class="overview-modal" id="overviewModal" hidden>
+    <div class="overview-card" role="dialog" aria-modal="true" aria-labelledby="overviewTitle">
+      <div class="overview-head">
+        <div>
+          <p class="overview-kicker">Layout overview</p>
+          <h2 class="overview-title" id="overviewTitle">排版总览</h2>
+        </div>
+        <button class="overview-close" id="overviewClose" type="button" aria-label="关闭">×</button>
+      </div>
+      <div class="overview-toolbar">
+        <button id="overviewDesign" type="button">⚙️ 打开书籍设计</button>
+        <span>下拉框可直接把文字或照片移到指定页；修改会保存到本机数据。</span>
+      </div>
+      <div class="overview-list" id="overviewList"></div>
     </div>
   </div>
 

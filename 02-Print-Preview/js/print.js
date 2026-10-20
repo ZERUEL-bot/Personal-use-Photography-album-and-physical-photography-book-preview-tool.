@@ -477,7 +477,7 @@
         sheets.push(wrap(`
           <div class="sheet-inner">
             <div class="plate-page">
-              <div class="plate-frame">${photoImg(photo)}</div>
+              <div class="plate-frame" data-decor="p:photo:${photoKey}" data-decor-label="照片 · ${escapeHtml(photo.title)}">${photoImg(photo)}</div>
               <div class="plate-meta">
                 <p class="plate-label" data-edit="t:photo:${photoKey}:label">Plate ${pad(plateNo)} · ${escapeHtml(entry.group.label)}</p>
                 <h2 class="plate-title" data-edit="t:photo:${photoKey}:title">${escapeHtml(photo.title)}</h2>

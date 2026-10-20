@@ -616,7 +616,7 @@
         pages.push(`
           <div class="page page--photo ${sideFor(pageIndex)}" data-page-key="photo:${escapeHtml(photo.id)}">
             <div class="page-inner">
-              <div class="photo-frame">
+              <div class="photo-frame" data-decor="p:photo:${escapeHtml(photo.id)}" data-decor-label="照片 · ${escapeHtml(photo.title)}">
                 <img src="${imageUrl(photo.book_file || photo.file)}" alt="${escapeHtml(photo.alt)}"
                      width="${photo.width}" height="${photo.height}"
                      loading="${plateNo <= 3 ? "eager" : "lazy"}" decoding="async">
@@ -883,6 +883,7 @@
 
     document.addEventListener("keydown", (event) => {
       if (designDrawer && designDrawer.classList.contains("is-open")) return;
+      if (overviewModal && !overviewModal.hidden) return;
       if (event.target && event.target.isContentEditable) return;
       if (event.target && /^(INPUT|SELECT|TEXTAREA)$/.test(event.target.tagName)) return;
       if (!pageFlip) return;
@@ -1323,6 +1324,11 @@
   const editSave = document.getElementById("editSave");
   const editDone = document.getElementById("editDone");
   const editDelete = document.getElementById("editDelete");
+  const editOverviewBtn = document.getElementById("editOverview");
+  const overviewModal = document.getElementById("overviewModal");
+  const overviewList = document.getElementById("overviewList");
+  const overviewClose = document.getElementById("overviewClose");
+  const overviewDesign = document.getElementById("overviewDesign");
   const editOrnamentBtn = document.getElementById("editOrnamentBtn");
   const editOrnamentPanel = document.getElementById("editOrnamentPanel");
   const editOrnamentList = document.getElementById("editOrnamentList");
@@ -1594,6 +1600,71 @@
     element.addEventListener("dragstart", preventEditorDrag);
   }
 
+  function ensureEditGuides() {
+    pageElements.forEach((page) => {
+      if (!page.querySelector(".edit-guides")) {
+        const guide = document.createElement("div");
+        guide.className = "edit-guides";
+        guide.setAttribute("aria-hidden", "true");
+        page.appendChild(guide);
+      }
+    });
+  }
+
+  function clearSnapState() {
+    pageElements.forEach((page) => page.classList.remove("is-snapping"));
+  }
+
+  function snapDragToGuides(state, dx, dy, page) {
+    if (!state || !page) return { dx, dy };
+    const threshold = 8;
+    const rect = page.getBoundingClientRect();
+    if (!rect.width || !rect.height) return { dx, dy };
+    const start = state.startRect;
+    const linesX = [
+      rect.left + rect.width * 0.075,
+      rect.left + rect.width / 2,
+      rect.right - rect.width * 0.075
+    ];
+    const linesY = [
+      rect.top + rect.height * 0.075,
+      rect.top + rect.height / 2,
+      rect.bottom - rect.height * 0.075
+    ];
+    const edgesX = [0, start.width / 2, start.width];
+    const edgesY = [0, start.height / 2, start.height];
+    let offsetX = null;
+    let offsetY = null;
+    let bestX = threshold + 1;
+    let bestY = threshold + 1;
+
+    linesX.forEach((line) => {
+      edgesX.forEach((edge) => {
+        const delta = line - (start.left + dx + edge);
+        if (Math.abs(delta) <= threshold && Math.abs(delta) < bestX) {
+          bestX = Math.abs(delta);
+          offsetX = delta;
+        }
+      });
+    });
+    linesY.forEach((line) => {
+      edgesY.forEach((edge) => {
+        const delta = line - (start.top + dy + edge);
+        if (Math.abs(delta) <= threshold && Math.abs(delta) < bestY) {
+          bestY = Math.abs(delta);
+          offsetY = delta;
+        }
+      });
+    });
+
+    if (offsetX !== null) dx += offsetX;
+    if (offsetY !== null) dy += offsetY;
+    pageElements.forEach((item) => {
+      item.classList.toggle("is-snapping", item === page && (offsetX !== null || offsetY !== null));
+    });
+    return { dx, dy };
+  }
+
   function captureEditorOriginals() {
     if (!bookElement) return;
     bookElement.querySelectorAll("[data-edit], [data-decor]").forEach((element) => {
@@ -1698,6 +1769,135 @@
     editBar.classList.toggle("show-ornaments", open);
     if (editOrnamentPanel) editOrnamentPanel.setAttribute("aria-hidden", open ? "false" : "true");
     if (editOrnamentBtn) editOrnamentBtn.setAttribute("aria-expanded", open ? "true" : "false");
+  }
+
+  function pageTypeLabel(page) {
+    if (!page) return "页面";
+    if (page.classList.contains("page--cover")) return "封面";
+    if (page.classList.contains("page--back")) return "封底";
+    if (page.classList.contains("page--photo")) return "作品";
+    if (page.classList.contains("page--chapter")) return "章节";
+    if (page.classList.contains("page--toc")) return "目录";
+    if (page.classList.contains("page--afterword")) return "后记";
+    if (page.classList.contains("page--inside")) return "扉页";
+    if (page.classList.contains("page--closing")) return "版权";
+    return "内页";
+  }
+
+  function overviewItemLabel(element) {
+    const given = element.getAttribute("data-edit-label") || element.getAttribute("data-decor-label");
+    if (given) return given;
+    if (element.matches(".photo-frame, .plate-frame, img")) return "照片";
+    const text = (element.textContent || "").replace(/\s+/g, " ").trim();
+    return text ? text.slice(0, 18) : "文字";
+  }
+
+  function moveElementToPage(element, targetKey) {
+    const targetPage = pageByKey(targetKey);
+    const sourcePage = element ? element.closest(".page") : null;
+    if (!element || !targetPage || !sourcePage || targetPage === sourcePage) return;
+    if (element.hasAttribute("data-ornament")) return;
+    const key = editorKeyOf(element);
+    if (!key) return;
+
+    const metrics = pageMetrics(sourcePage);
+    const rect = element.getBoundingClientRect();
+    const x = clampValue(((rect.left - metrics.rect.left) * metrics.scaleX) / metrics.width, -0.5, 1.5);
+    const y = clampValue(((rect.top - metrics.rect.top) * metrics.scaleY) / metrics.height, -0.5, 1.5);
+    const w = clampValue((rect.width * metrics.scaleX) / metrics.width, 0.05, 1.5);
+
+    pushEditorHistory();
+    const draft = ensureEditorDraft();
+    draft.placements[key] = { page: targetKey, x, y, w };
+    delete draft.offsets[key];
+    applyPlacement(element, draft.placements[key]);
+    selectElement(element);
+    markEditorDirty("已移到第 " + (pageElements.indexOf(targetPage) + 1) + " 页 · 未保存");
+    renderOverview();
+  }
+
+  function renderOverview() {
+    if (!overviewList) return;
+    overviewList.innerHTML = "";
+
+    pageElements.forEach((page, index) => {
+      const card = document.createElement("section");
+      card.className = "overview-page";
+
+      const head = document.createElement("div");
+      head.className = "overview-page-head";
+      const name = document.createElement("span");
+      name.textContent = pad(index + 1) + " · " + pageTypeLabel(page);
+
+      const jump = document.createElement("button");
+      jump.type = "button";
+      jump.className = "overview-action overview-jump";
+      jump.textContent = "前往";
+      jump.addEventListener("click", () => {
+        closeOverview();
+        if (pageFlip) pageFlip.turnToPage(index);
+        const first = page.querySelector("[data-edit], [data-decor]");
+        if (first) selectElement(first);
+      });
+      head.append(name, jump);
+
+      const items = document.createElement("div");
+      items.className = "overview-items";
+      const elements = Array.from(page.querySelectorAll("[data-edit], [data-decor]"))
+        .filter((element) => !element.hasAttribute("data-ornament"));
+
+      if (!elements.length) {
+        const empty = document.createElement("p");
+        empty.className = "overview-empty";
+        empty.textContent = "本页没有可移动的文字或照片";
+        items.append(empty);
+      }
+
+      elements.forEach((element) => {
+        const row = document.createElement("div");
+        row.className = "overview-item";
+
+        const label = document.createElement("span");
+        label.textContent = overviewItemLabel(element);
+
+        const select = document.createElement("select");
+        pageElements.forEach((optionPage, optionIndex) => {
+          const option = document.createElement("option");
+          option.value = optionPage.getAttribute("data-page-key");
+          option.textContent = pad(optionIndex + 1) + " · " + pageTypeLabel(optionPage);
+          select.append(option);
+        });
+        select.value = page.getAttribute("data-page-key");
+        select.addEventListener("change", () => moveElementToPage(element, select.value));
+
+        const focus = document.createElement("button");
+        focus.type = "button";
+        focus.className = "overview-action";
+        focus.textContent = "选中";
+        focus.addEventListener("click", () => {
+          closeOverview();
+          if (pageFlip) pageFlip.turnToPage(index);
+          selectElement(element);
+        });
+
+        row.append(label, select, focus);
+        items.append(row);
+      });
+
+      card.append(head, items);
+      overviewList.append(card);
+    });
+  }
+
+  function openOverview() {
+    if (!document.body.classList.contains("is-editing")) enterEditMode();
+    ensureEditGuides();
+    renderOverview();
+    if (overviewModal) overviewModal.hidden = false;
+  }
+
+  function closeOverview() {
+    if (overviewModal) overviewModal.hidden = true;
   }
 
   function addOrnament(type) {
@@ -2184,9 +2384,13 @@
 
   function onEditorPointerMove(event) {
     if (!dragState || event.pointerId !== dragState.pointerId) return;
-    const dx = event.clientX - dragState.startX;
-    const dy = event.clientY - dragState.startY;
+    let dx = event.clientX - dragState.startX;
+    let dy = event.clientY - dragState.startY;
     if (!dragState.moved && Math.hypot(dx, dy) < DRAG_THRESHOLD) return;
+    const target = pageAtPoint(event.clientX, event.clientY) || dragState.page;
+    const snapped = snapDragToGuides(dragState, dx, dy, target);
+    dx = snapped.dx;
+    dy = snapped.dy;
     if (!dragState.moved) {
       dragState.moved = true;
       dragState.proxy = createDragProxy(
@@ -2201,7 +2405,7 @@
       dragState.element.classList.add("is-drag-source", "is-dragging");
       const label = dragState.element.getAttribute("data-edit-label") ||
         dragState.element.getAttribute("data-decor-label") || "元素";
-      setEditTip("正在移动「" + label + "」· 可拖到相邻页 · 松开完成");
+      setEditTip("正在移动「" + label + "」· 靠近辅助线会自动吸附 · 可拖到相邻页");
     }
     event.preventDefault();
     dragState.lastX = event.clientX;
@@ -2211,7 +2415,6 @@
       proxy.style.left = (dragState.proxyBaseLeft + dx) + "px";
       proxy.style.top = (dragState.proxyBaseTop + dy) + "px";
     }
-    const target = pageAtPoint(event.clientX, event.clientY) || dragState.page;
     dragState.targetPage = target;
     setDropTarget(target === dragState.page ? null : target);
   }
@@ -2220,6 +2423,7 @@
     if (!dragState || (event && event.pointerId !== dragState.pointerId)) return;
     const state = dragState;
     dragState = null;
+    clearSnapState();
     const proxyRect = state.proxy ? state.proxy.getBoundingClientRect() : null;
     removeDragProxy(state);
     try {
@@ -2284,6 +2488,7 @@
     if (!dragState) return;
     const state = dragState;
     dragState = null;
+    clearSnapState();
     removeDragProxy(state);
     try {
       state.element.releasePointerCapture(state.pointerId);
@@ -2307,6 +2512,7 @@
     closeDesignDrawer();
     ensureEditorDraft();
     document.body.classList.add("is-editing");
+    ensureEditGuides();
     if (editBar) {
       editBar.classList.add("is-open");
       editBar.setAttribute("aria-hidden", "false");
@@ -2322,7 +2528,7 @@
     if (editDelete) editDelete.disabled = true;
     toggleOrnamentPanel(false);
     setEditStatus(editDirty ? "有未保存修改" : "未保存");
-    setEditTip("点击选中文字或图案 · 双击改写 · 拖动移动 · ＋装饰 添加图案");
+    setEditTip("点击选中文字/照片 · 双击改写 · 拖动可跨页 · 靠近辅助线自动吸附");
     selectElement(null);
     window.requestAnimationFrame(applyEditorOffsets);
     window.setTimeout(applyEditorOffsets, 320);
@@ -2333,6 +2539,7 @@
     bookElement.querySelectorAll("[contenteditable='true']").forEach((element) => finishTextEdit(element));
     selectElement(null);
     toggleOrnamentPanel(false);
+    clearSnapState();
     document.body.classList.remove("is-editing");
     if (editBar) {
       editBar.classList.remove("is-open");
@@ -2374,6 +2581,19 @@
   }
   if (editDone) editDone.addEventListener("click", exitEditMode);
   if (editSave) editSave.addEventListener("click", saveEditChanges);
+  if (editOverviewBtn) editOverviewBtn.addEventListener("click", openOverview);
+  if (overviewClose) overviewClose.addEventListener("click", closeOverview);
+  if (overviewDesign) {
+    overviewDesign.addEventListener("click", () => {
+      closeOverview();
+      openDesignDrawer();
+    });
+  }
+  if (overviewModal) {
+    overviewModal.addEventListener("click", (event) => {
+      if (event.target === overviewModal) closeOverview();
+    });
+  }
   if (editUndo) editUndo.addEventListener("click", undoEditor);
   if (editReset) editReset.addEventListener("click", resetEditorTargets);
   if (editDelete) editDelete.addEventListener("click", deleteSelectedOrnament);
@@ -2490,7 +2710,13 @@
 
 
   document.addEventListener("keydown", (event) => {
-    if (event.key !== "Escape" || !designDrawer) return;
+    if (event.key !== "Escape") return;
+    if (overviewModal && !overviewModal.hidden) {
+      event.preventDefault();
+      closeOverview();
+      return;
+    }
+    if (!designDrawer) return;
     if (!designDrawer.classList.contains("is-open")) return;
     event.preventDefault();
     closeDesignDrawer();
