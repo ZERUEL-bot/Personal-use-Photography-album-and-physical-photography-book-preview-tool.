@@ -4,7 +4,7 @@
  */
 "use strict";
 
-const CACHE_NAME = "photo-pwa-v1";
+const CACHE_NAME = "photo-pwa-v2";
 
 const PRECACHE = [
   "./",
@@ -54,7 +54,21 @@ const PRECACHE = [
   "./assets/images/12-distant-ridge-1000.webp",
   "./assets/images/12-distant-ridge-2000.webp",
   "./assets/images/13-last-light-1000.webp",
-  "./assets/images/13-last-light-2000.webp"
+  "./assets/images/13-last-light-2000.webp",
+  "./02-Print-Preview/index.html",
+  "./02-Print-Preview/print.html",
+  "./02-Print-Preview/favicon.svg",
+  "./02-Print-Preview/css/style.css",
+  "./02-Print-Preview/css/print.css",
+  "./02-Print-Preview/js/main.js",
+  "./02-Print-Preview/js/print.js",
+  "./02-Print-Preview/js/ornaments.js",
+  "./02-Print-Preview/lib/page-flip.browser.min.js",
+  "./02-Print-Preview/assets/fonts/Inter-var.woff2",
+  "./02-Print-Preview/assets/fonts/PlayfairDisplay-var.woff2",
+  "./02-Print-Preview/assets/fonts/PlayfairDisplay-italic-var.woff2",
+  "./02-Print-Preview/assets/textures/paper-noise.png",
+  "./02-Print-Preview/assets/textures/wood-desk.webp"
 ];
 
 self.addEventListener("install", (event) => {
@@ -106,6 +120,8 @@ self.addEventListener("fetch", (event) => {
           return response;
         })
         .catch(async () => {
+          const direct = await caches.match(request);
+          if (direct) return direct;
           const cached = await caches.match("./index.html");
           return cached || (await caches.match("./")) || Response.error();
         })

@@ -613,13 +613,24 @@
     return (error && error.message) || "未知错误";
   };
 
-  const persistDraft = async () => {
+  const persistDraft = async (options = {}) => {
     if (!state.data) return false;
     if (!storeSupported) {
       showToast("当前浏览器不支持 IndexedDB，修改无法保存", 5600);
       return false;
     }
     try {
+      if (options.mergeBook !== false) {
+        try {
+          const latest = await window.PortfolioStore.read();
+          if (latest) {
+            if (latest.book_settings) state.data.book_settings = latest.book_settings;
+            if (latest.book_afterword) state.data.book_afterword = latest.book_afterword;
+          }
+        } catch (error) {
+          /* keep the in-memory copy if the latest record cannot be read */
+        }
+      }
       await window.PortfolioStore.write(state.data);
       state.dirty = false;
       state.saved = true;
@@ -699,7 +710,14 @@
     const ok = await persistDraft();
     if (ok) {
       state.baseUpdated = state.data.meta.updated;
-      showToast("已保存到本机浏览器 · 数据只在这台设备", 4200);
+      try {
+        const channel = new BroadcastChannel("glimpse-portfolio");
+        channel.postMessage({ type: "saved", source: "gallery" });
+        channel.close();
+      } catch (error) {
+        /* older browsers keep the preview until a manual reload */
+      }
+      showToast("已保存到本机浏览器 · 实体书预览会同步刷新", 4200);
     }
     saveBtn.disabled = false;
     saveBtn.textContent = original;
@@ -2459,7 +2477,16 @@
       state.dirty = true;
       state.saved = false;
       updateEditorStatus();
-      const ok = await persistDraft();
+      const ok = await persistDraft({ mergeBook: false });
+      if (ok) {
+        try {
+          const channel = new BroadcastChannel("glimpse-portfolio");
+          channel.postMessage({ type: "saved", source: "gallery" });
+          channel.close();
+        } catch (error) {
+          /* ignore */
+        }
+      }
       showToast(
         ok
           ? "备份已导入 · 共 " + state.data.photos.length + " 张照片"
@@ -2734,6 +2761,24 @@
         },
         { passive: true }
       );
+    }
+
+    try {
+      const syncChannel = new BroadcastChannel("glimpse-portfolio");
+      syncChannel.addEventListener("message", async (event) => {
+        if (!event.data || event.data.type !== "saved" || event.data.source !== "book") return;
+        try {
+          const latest = await window.PortfolioStore.read();
+          if (latest && state.data) {
+            state.data.book_settings = latest.book_settings;
+            state.data.book_afterword = latest.book_afterword;
+          }
+        } catch (error) {
+          /* ignore */
+        }
+      });
+    } catch (error) {
+      /* BroadcastChannel unsupported */
     }
 
     window.addEventListener("beforeunload", (event) => {

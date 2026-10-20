@@ -18,9 +18,16 @@ py -3 -m http.server 5500
 ## PWA 与离线
 
 - `manifest.json`：应用名「我的摄影集 · A Glimpse of Trees」、独立窗口显示、主题/背景色 `#0f0f0f`、192/512 图标。
-- `service-worker.js`：预缓存 HTML、CSS、JS、本地字体、内置示例图片与默认数据；导航请求走网络优先并回退缓存，静态资源缓存优先并后台更新。
-- 断网后可打开应用框架、浏览默认作品与已缓存的字体/图片；作品数据来自 IndexedDB，本地编辑照常可用。
-- 修改静态文件后部署：更新 `service-worker.js` 里的 `CACHE_NAME`（如 `photo-pwa-v2`）以触发客户端更新。
+- `service-worker.js`：预缓存 HTML、CSS、JS、本地字体、内置示例图片与默认数据，并包含 `02-Print-Preview` 的页面与资源；导航请求网络优先并回退到对应页面缓存，静态资源缓存优先并后台更新。
+- 断网后可打开画廊与实体书、浏览默认作品与已缓存的字体/图片；作品数据来自 IndexedDB，本地编辑照常可用。
+- 修改静态文件后部署：更新 `service-worker.js` 里的 `CACHE_NAME`（如 `photo-pwa-v3`）以触发客户端更新。
+
+## 实体书预览（02-Print-Preview）
+
+- 入口：画廊右上角「实体书 ↗」或管理员栏「预览实体书 ↗」。
+- 与画廊共用同一个 IndexedDB（库 `photo-project-pwa`、对象仓 `portfolio`、键 `current`）；画廊保存后会通过 BroadcastChannel 通知已打开的实体书自动刷新。
+- 实体书内的「书籍设计」与「编辑版面」直接写回同一份数据（`book_settings`）；画廊保存时会合并最新的 `book_settings` / `book_afterword`，不会覆盖实体书改动。
+- 封面/配图上传改为前端压缩成 Base64 存入 IndexedDB；「导出印刷 PDF」打开 `print.html?print=1` 并调用浏览器打印，可另存为 PDF。
 
 ## 数据与备份
 
@@ -64,6 +71,7 @@ lib/                       Quill、SortableJS（本地文件，无 CDN）
 assets/images/             内置示例图片 + manifest.json
 assets/fonts/ …            本地字体与纹理
 assets/icons/              192 / 512 / 180 应用图标
+02-Print-Preview/          实体书 3D 预览、书籍设计、编辑版面、打印视图
 data/default-portfolio.json 首次运行的默认数据
 ```
 
@@ -75,7 +83,7 @@ data/default-portfolio.json 首次运行的默认数据
 2. 按仓库页提示推送本目录（`git remote add origin …`、`git push -u origin main`）。
 3. 登录腾讯云 EdgeOne Pages → 新建项目 → 关联 GitHub 仓库。
 4. 构建设置：构建命令留空，输出目录填 `/`（或 `.`）；框架预设选“静态/无框架”。
-5. 部署完成后访问分配的域名，`index.html`、`manifest.json`、`service-worker.js` 均从站点根路径加载。
+5. 部署完成后访问分配的域名，`index.html`、`manifest.json`、`service-worker.js` 与 `02-Print-Preview/` 均从站点根路径加载。
 
 > 更新内容后：提高 `service-worker.js` 的 `CACHE_NAME` 版本号再推送，访客下次打开会自动更新缓存。
 

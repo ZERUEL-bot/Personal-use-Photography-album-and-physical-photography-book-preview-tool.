@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A Glimpse of Trees — a print proof of a photographic book, previewed as a physical object.">
+  <meta name="theme-color" content="#140e09">
+  <meta name="color-scheme" content="dark">
+  <title>A Glimpse of Trees — Print Proof</title>
+
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../manifest.json">
+  <link rel="apple-touch-icon" href="../assets/icons/icon-180.png">
+  <link rel="preload" href="assets/fonts/PlayfairDisplay-var.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/Inter-var.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="desk-grain" aria-hidden="true"></div>
+
+  <header class="scene-bar">
+    <p class="scene-brand"><span class="brand-mark" aria-hidden="true"></span> A Glimpse of Trees</p>
+    <div class="scene-tools">
+      <p class="scene-tag">Print preview <span aria-hidden="true">·</span> Vol. I</p>
+      <a class="scene-link" href="../index.html">返回线上站 ↗</a>
+      <button class="scene-export" id="exportPdfBtn" type="button" title="打开打印视图，用浏览器打印并另存为 PDF">导出印刷 PDF</button>
+      <button class="scene-edit" id="editBtn" type="button" aria-pressed="false" aria-controls="editBar" title="选中文案直接改写，拖动文字或装饰调整位置">✏️ 编辑版面</button>
+      <button class="scene-design" id="designBtn" type="button" aria-expanded="false" aria-controls="designDrawer" aria-label="书籍设计">⚙️ 书籍设计</button>
+    </div>
+  </header>
+
+  <main class="stage">
+    <div class="book-wrap">
+      <div class="book-shadow" aria-hidden="true"></div>
+      <div class="book" id="book" aria-label="A Glimpse of Trees — photo book preview"></div>
+    </div>
+
+    <div class="controls" aria-label="Book controls">
+      <button class="control" id="prevPage" type="button" aria-label="Previous page">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M12.5 3 5.5 10l7 7" fill="none" stroke="currentColor" stroke-width="1.1"/></svg>
+      </button>
+      <p class="pager" aria-live="polite">
+        <span id="pagerCurrent">01</span>
+        <span class="pager-rule" aria-hidden="true"></span>
+        <span id="pagerTotal"></span>
+      </p>
+      <button class="control" id="nextPage" type="button" aria-label="Next page">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7.5 3 7 7-7 7" fill="none" stroke="currentColor" stroke-width="1.1"/></svg>
+      </button>
+    </div>
+
+    <p class="hint">Drag the page corner to turn <span aria-hidden="true">·</span> 拖动右下角翻页</p>
+  </main>
+
+  <footer class="scene-foot">
+    <p>Proof copy — not for sale</p>
+    <p>240 × 320 mm <span aria-hidden="true">·</span> <span id="bookPageCount"></span> pages</p>
+  </footer>
+
+  <div class="loader" id="loader" role="status" aria-live="polite">
+    <p class="loader-brand">A Glimpse of Trees</p>
+    <span class="loader-line" aria-hidden="true"></span>
+    <p class="loader-text">Preparing the proof</p>
+  </div>
+
+  <div class="design-backdrop" id="designBackdrop" aria-hidden="true"></div>
+
+  <aside class="design-drawer" id="designDrawer" aria-hidden="true" aria-labelledby="designHeading">
+    <header class="design-head">
+      <div>
+        <p class="design-kicker">Print proof</p>
+        <h2 class="design-title" id="designHeading">书籍设计</h2>
+      </div>
+      <button class="design-close" id="designClose" type="button" aria-label="关闭设计面板">×</button>
+    </header>
+
+    <div class="design-body">
+      <section class="design-section">
+        <h3 class="design-section-title">封面与封底</h3>
+
+        <label class="design-field">
+          <span>主书名</span>
+          <input id="designTitle" type="text" autocomplete="off" spellcheck="false">
+        </label>
+
+        <label class="design-field">
+          <span>副标题</span>
+          <input id="designSubtitle" type="text" autocomplete="off" spellcheck="false">
+        </label>
+
+        <label class="design-field">
+          <span>作者名</span>
+          <input id="designAuthor" type="text" autocomplete="off" spellcheck="false" placeholder="留空则不显示">
+        </label>
+
+        <label class="design-field">
+          <span>顶部小标题（可留空）</span>
+          <input id="designKicker" type="text" autocomplete="off" spellcheck="false" placeholder="Photographs">
+        </label>
+
+        <label class="design-field">
+          <span>封面配图</span>
+          <select id="designCoverPhoto"></select>
+        </label>
+        <div class="design-drop" id="designPhotoDrop" role="button" tabindex="0">
+          <span>拖入封面配图</span>
+          <em>或点击选择 · JPG / PNG / WebP / AVIF · ≤25 MB</em>
+        </div>
+        <input id="designPhotoFile" type="file" accept="image/jpeg,image/png,image/webp,image/avif,image/gif" hidden>
+
+        <p class="design-label">封面版式</p>
+        <div class="design-segments" role="group" aria-label="封面版式">
+          <button type="button" data-setting="cover.layout" data-value="framed">装裱照片</button>
+          <button type="button" data-setting="cover.layout" data-value="full">满版照片</button>
+          <button type="button" data-setting="cover.layout" data-value="text">纯文字</button>
+        </div>
+
+        <p class="design-label">封面背景色</p>
+        <div class="design-swatches" role="group" aria-label="封面背景色">
+          <button class="swatch swatch--forest" type="button" data-setting="cover.color" data-value="#1d2a22" aria-label="森林绿"></button>
+          <button class="swatch swatch--oxblood" type="button" data-setting="cover.color" data-value="#4a252b" aria-label="酒红"></button>
+          <button class="swatch swatch--navy" type="button" data-setting="cover.color" data-value="#1e2a3a" aria-label="藏蓝"></button>
+          <button class="swatch swatch--charcoal" type="button" data-setting="cover.color" data-value="#242424" aria-label="炭黑"></button>
+          <button class="swatch swatch--clay" type="button" data-setting="cover.color" data-value="#5a3f2e" aria-label="陶土棕"></button>
+          <button class="swatch swatch--slate" type="button" data-setting="cover.color" data-value="#313b3f" aria-label="石板灰"></button>
+        </div>
+
+        <label class="design-field">
+          <span>封面底图路径</span>
+          <input id="designImage" type="text" autocomplete="off" spellcheck="false" placeholder="assets/images/cover-bg.jpg">
+        </label>
+        <div class="design-drop" id="designImageDrop" role="button" tabindex="0">
+          <span>拖入封面底图</span>
+          <em>或点击选择 · 自动上传至 assets/uploads</em>
+        </div>
+        <input id="designImageFile" type="file" accept="image/jpeg,image/png,image/webp,image/avif,image/gif" hidden>
+        <p class="design-hint">留空为纯色封面；也可直接拖入/点击上传图片，上传后仍可手动改路径。禁止远程地址。</p>
+      </section>
+
+      <section class="design-section">
+        <h3 class="design-section-title">纸张与材质</h3>
+
+        <p class="design-label">纸张底色</p>
+        <div class="design-swatches" role="group" aria-label="纸张底色">
+          <button class="swatch swatch--white" type="button" data-setting="paper.color" data-value="#ffffff" aria-label="纯白"></button>
+          <button class="swatch swatch--warm" type="button" data-setting="paper.color" data-value="#f5f2eb" aria-label="暖白"></button>
+          <button class="swatch swatch--cream" type="button" data-setting="paper.color" data-value="#f3e7cd" aria-label="米黄"></button>
+          <button class="swatch swatch--vintage" type="button" data-setting="paper.color" data-value="#e3d3b3" aria-label="复古"></button>
+        </div>
+
+        <p class="design-label">纸张质感</p>
+        <div class="design-segments" role="group" aria-label="纸张质感">
+          <button type="button" data-setting="paper.texture" data-value="none">无</button>
+          <button type="button" data-setting="paper.texture" data-value="light">轻微噪点</button>
+          <button type="button" data-setting="paper.texture" data-value="strong">强噪点</button>
+        </div>
+      </section>
+
+      <section class="design-section">
+        <h3 class="design-section-title">字体排版</h3>
+
+        <label class="design-field">
+          <span>标题字体</span>
+          <select id="designHeadingFont">
+            <option value="playfair">Playfair Display</option>
+            <option value="sans">默认无衬线体</option>
+            <option value="songti">系统宋体</option>
+          </select>
+        </label>
+
+        <label class="design-field">
+          <span>正文字体</span>
+          <select id="designBodyFont">
+            <option value="inter">Inter</option>
+            <option value="kaiti">系统楷体</option>
+            <option value="songti">系统宋体</option>
+          </select>
+        </label>
+      </section>
+
+      <section class="design-section">
+        <h3 class="design-section-title">场景背景</h3>
+        <div class="design-segments" role="group" aria-label="预览台背景">
+          <button type="button" data-setting="scene.background" data-value="wood">深色木纹</button>
+          <button type="button" data-setting="scene.background" data-value="black">极简纯黑</button>
+          <button type="button" data-setting="scene.background" data-value="light">浅灰白</button>
+        </div>
+      </section>
+
+      <section class="design-section">
+        <h3 class="design-section-title">印刷 PDF</h3>
+        <p class="design-label">设计与版面同步</p>
+        <div class="design-segments" role="group" aria-label="是否同步到印刷 PDF">
+          <button type="button" data-setting="pdf.sync" data-value="false">仅 3D 预览</button>
+          <button type="button" data-setting="pdf.sync" data-value="true">同步到 PDF</button>
+        </div>
+        <p class="design-hint">选择「同步到 PDF」并保存后，导出印刷 PDF 才会使用当前封面、纸张、字体，以及「✏️ 编辑版面」里的文字改动、位置和装饰图案；选择「仅 3D 预览」时，PDF 保持原有默认版式。</p>
+      </section>
+    </div>
+
+    <footer class="design-foot">
+      <p class="design-status" id="designStatus" role="status">未保存</p>
+      <button class="design-save" id="designSave" type="button">💾 保存设计</button>
+    </footer>
+  </aside>
+
+  <div class="edit-bar" id="editBar" role="region" aria-label="版面编辑工具" aria-hidden="true">
+    <div class="edit-ornament-panel" id="editOrnamentPanel" aria-hidden="true">
+      <div class="edit-ornament-head">
+        <span>装饰预设 · 点击添加到当前页</span>
+        <button class="edit-ornament-close" id="editOrnamentClose" type="button" aria-label="收起装饰预设">×</button>
+      </div>
+      <div class="edit-ornament-list" id="editOrnamentList" role="group" aria-label="装饰预设"></div>
+      <p class="edit-ornament-note">添加后可拖动调整位置；选中后按 Delete 或点「删除」移除。</p>
+    </div>
+    <div class="edit-decor-panel" id="editDecorPanel" aria-hidden="true">
+      <div class="edit-decor-row">
+        <span class="edit-decor-label">旋转</span>
+        <input class="edit-decor-range" id="decorRotate" type="range" min="-180" max="180" step="1" value="0" aria-label="装饰旋转角度">
+        <output class="edit-decor-value" id="decorRotateValue">0°</output>
+      </div>
+      <div class="edit-decor-row">
+        <span class="edit-decor-label">缩放</span>
+        <input class="edit-decor-range" id="decorScale" type="range" min="25" max="300" step="1" value="100" aria-label="装饰缩放百分比">
+        <output class="edit-decor-value" id="decorScaleValue">100%</output>
+        <button class="edit-decor-reset" id="decorReset" type="button" title="重置旋转和缩放">↺</button>
+      </div>
+    </div>
+    <p class="edit-hint">
+      <span class="edit-tip" id="editTip">点击选中文字或图案 · 双击改写 · 拖动移动</span>
+      <span class="edit-status" id="editStatus" role="status">未保存</span>
+    </p>
+    <div class="edit-actions">
+      <button class="edit-action" id="editUndo" type="button" title="撤销上一步（Ctrl+Z）">↶ 撤销</button>
+      <button class="edit-action" id="editReset" type="button" title="重置所选元素；未选中时重置全部">↺ 重置</button>
+      <button class="edit-action edit-action--ornament" id="editOrnamentBtn" type="button" aria-expanded="false" aria-controls="editOrnamentPanel">＋ 装饰</button>
+      <button class="edit-action" id="editDelete" type="button" title="删除选中的新增装饰（Delete）" disabled>🗑 删除</button>
+      <button class="edit-action edit-action--save" id="editSave" type="button">💾 保存修改</button>
+      <button class="edit-action" id="editDone" type="button">完成</button>
+    </div>
+  </div>
+
+  <script src="lib/page-flip.browser.min.js"></script>
+  <script src="js/ornaments.js"></script>
+  <script src="../js/storage.js"></script>
+  <script src="../js/image-tools.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

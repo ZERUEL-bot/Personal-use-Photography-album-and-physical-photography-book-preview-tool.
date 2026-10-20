@@ -1,0 +1,747 @@
+/* A Glimpse of Trees — print-ready PDF layout (246 × 326 mm = 240 × 320 trim + 3 mm bleed) */
+
+@font-face {
+  font-family: "Playfair Display";
+  src: url("../assets/fonts/PlayfairDisplay-var.woff2") format("woff2");
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: block;
+}
+
+@font-face {
+  font-family: "Playfair Display";
+  src: url("../assets/fonts/PlayfairDisplay-italic-var.woff2") format("woff2");
+  font-weight: 400 900;
+  font-style: italic;
+  font-display: block;
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url("../assets/fonts/Inter-var.woff2") format("woff2");
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: block;
+}
+
+:root {
+  --paper: #f5f2eb;
+  --ink: #2a2721;
+  --ink-soft: #6c655a;
+  --foil: #cbb68d;
+  --font-heading: "Playfair Display", "Songti SC", "SimSun", serif;
+  --font-body: "Playfair Display", "Songti SC", "SimSun", serif;
+  --ui-sans: "Inter", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --serif: var(--font-heading);
+  --sans: var(--ui-sans);
+  --cover-bg: #1d2a22;
+  --cover-image: none;
+  --cover-ink: #ece2cb;
+  --cover-ink-soft: rgba(233, 223, 201, 0.66);
+  --paper-texture: none;
+  --paper-texture-size: 24mm 24mm;
+}
+
+@page {
+  size: 246mm 326mm;
+  margin: 0;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: #ffffff;
+}
+
+body {
+  font-family: var(--sans);
+  color: var(--ink);
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+}
+
+.sheet {
+  position: relative;
+  width: 246mm;
+  height: 326mm;
+  overflow: hidden;
+  background-color: var(--paper);
+  background-image: var(--paper-texture);
+  background-size: var(--paper-texture-size);
+  background-blend-mode: multiply;
+  page-break-after: always;
+  break-after: page;
+}
+
+html[data-design-sync="true"] .sheet {
+  font-family: var(--font-body);
+}
+
+.sheet:last-child {
+  page-break-after: auto;
+  break-after: auto;
+}
+
+.sheet-inner {
+  position: absolute;
+  left: 18mm;
+  right: 18mm;
+  top: 17mm;
+  bottom: 17mm;
+  display: flex;
+  flex-direction: column;
+}
+
+.sheet--left .sheet-inner {
+  left: 22mm;
+  right: 18mm;
+}
+
+.sheet--right .sheet-inner {
+  left: 18mm;
+  right: 22mm;
+}
+
+.sheet--cover,
+.sheet--back {
+  background-color: #1d2a22;
+  background-image:
+    radial-gradient(circle at 30% 12%, rgba(255, 255, 255, 0.09), transparent 48%),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.022) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.055) 0 1px, transparent 1px 3px),
+    linear-gradient(150deg, #26382d 0%, #1a2720 48%, #111a15 100%);
+  background-blend-mode: normal;
+  color: #e9dfc9;
+}
+
+/* Design sync: cover stock follows book_settings when enabled. */
+html[data-design-sync="true"] .sheet--cover,
+html[data-design-sync="true"] .sheet--back {
+  background-color: var(--cover-bg);
+  background-image:
+    linear-gradient(160deg, rgba(0, 0, 0, 0.32), rgba(0, 0, 0, 0.08) 42%, rgba(0, 0, 0, 0.46)),
+    var(--cover-image),
+    radial-gradient(circle at 30% 12%, rgba(255, 255, 255, 0.09), transparent 48%),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.022) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.055) 0 1px, transparent 1px 3px),
+    linear-gradient(150deg, rgba(255, 255, 255, 0.05) 0%, rgba(0, 0, 0, 0.18) 48%, rgba(0, 0, 0, 0.42) 100%);
+  background-size: auto, cover, auto, auto, auto, auto;
+  background-position: center;
+  background-blend-mode: normal;
+  color: var(--cover-ink);
+}
+
+/* Crop marks: page edge → trim line (3 mm bleed) ------------------------- */
+.crop {
+  position: absolute;
+  z-index: 50;
+  background: #000000;
+}
+
+.crop--tl-h { left: 0; top: 3mm; width: 5mm; height: 0.2mm; }
+.crop--tl-v { left: 3mm; top: 0; width: 0.2mm; height: 5mm; }
+.crop--tr-h { right: 0; top: 3mm; width: 5mm; height: 0.2mm; }
+.crop--tr-v { right: 3mm; top: 0; width: 0.2mm; height: 5mm; }
+.crop--bl-h { left: 0; bottom: 3mm; width: 5mm; height: 0.2mm; }
+.crop--bl-v { left: 3mm; bottom: 0; width: 0.2mm; height: 5mm; }
+.crop--br-h { right: 0; bottom: 3mm; width: 5mm; height: 0.2mm; }
+.crop--br-v { right: 3mm; bottom: 0; width: 0.2mm; height: 5mm; }
+
+/* Cover ------------------------------------------------------------------ */
+.cover-frame {
+  position: absolute;
+  z-index: 2;
+  inset: 10mm;
+  border: 0.35mm solid rgba(203, 182, 141, 0.5);
+}
+
+.cover-frame::after {
+  content: "";
+  position: absolute;
+  inset: 2mm;
+  border: 0.15mm solid rgba(203, 182, 141, 0.22);
+}
+
+.cover-inner {
+  position: absolute;
+  z-index: 3;
+  inset: 16mm;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.cover-fullbleed {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  overflow: hidden;
+}
+
+.cover-fullbleed img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cover-shade {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  background:
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.34), transparent 32%, transparent 58%, rgba(0, 0, 0, 0.62)),
+    radial-gradient(ellipse at 50% 40%, transparent 40%, rgba(0, 0, 0, 0.3));
+}
+
+.cover-inner--full {
+  justify-content: flex-end;
+  padding-bottom: 12mm;
+}
+
+.cover-inner--full .cover-kicker {
+  position: absolute;
+  top: 8mm;
+  left: 0;
+  right: 0;
+  margin: 0;
+}
+
+.cover-inner--full .cover-title {
+  margin-top: 0;
+}
+
+.cover-inner--text {
+  justify-content: center;
+}
+
+.cover-inner--text .cover-title {
+  margin-top: 8mm;
+}
+
+.cover-inner--text .cover-foot {
+  margin-top: 12mm;
+}
+
+.cover-kicker:empty {
+  display: none;
+}
+
+.cover-kicker {
+  margin: 8mm 0 0;
+  font-size: 2.7mm;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: rgba(233, 223, 201, 0.66);
+}
+
+.cover-plate {
+  width: 96mm;
+  margin-top: 12mm;
+  padding: 2.2mm;
+  background: #efe9dc;
+  box-shadow: 0 3mm 7mm rgba(0, 0, 0, 0.45);
+}
+
+.cover-plate img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 150mm;
+  object-fit: contain;
+}
+
+.cover-title {
+  margin: 12mm 0 0;
+  font-family: var(--serif);
+  font-size: 16mm;
+  font-weight: 400;
+  line-height: 1.03;
+  color: #ece2cb;
+  overflow-wrap: anywhere;
+}
+
+.cover-title em {
+  color: var(--foil);
+  font-style: italic;
+}
+
+.cover-subtitle {
+  max-width: 118mm;
+  margin: 4mm 0 0;
+  font-family: var(--font-body);
+  font-size: 3mm;
+  line-height: 1.7;
+  letter-spacing: 0.06em;
+  color: var(--cover-ink-soft);
+  overflow-wrap: anywhere;
+}
+
+.cover-subtitle:empty {
+  display: none;
+}
+
+.cover-foot {
+  margin: auto 0 2mm;
+  font-size: 2.6mm;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: rgba(233, 223, 201, 0.6);
+}
+
+.cover-author:empty {
+  display: none;
+}
+
+.cover-author:not(:empty)::after {
+  content: " · ";
+}
+
+/* Text pages ------------------------------------------------------------- */
+.sheet-folio {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 8mm;
+  text-align: center;
+  font-size: 2.5mm;
+  letter-spacing: 0.22em;
+  color: #8b8272;
+}
+
+.smallcaps {
+  margin: 0;
+  font-size: 2.7mm;
+  letter-spacing: 0.36em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.text-page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.text-title {
+  margin: 7mm 0 6mm;
+  font-family: var(--serif);
+  font-size: 11mm;
+  font-weight: 400;
+  line-height: 1.15;
+  color: #24211b;
+}
+
+.text-body {
+  max-width: 92mm;
+  margin: 0;
+  font-size: 3.1mm;
+  line-height: 2;
+  color: #625b50;
+}
+
+.text-mark {
+  width: 0.3mm;
+  height: 12mm;
+  margin: 8mm 0;
+  background: rgba(90, 78, 58, 0.32);
+}
+
+.imprint {
+  margin: 7mm 0 0;
+  font-size: 2.4mm;
+  letter-spacing: 0.3em;
+  line-height: 2.1;
+  text-transform: uppercase;
+  color: #8b8272;
+}
+
+/* Contents --------------------------------------------------------------- */
+.toc-page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.toc-title {
+  margin: 6mm 0 8mm;
+  font-family: var(--serif);
+  font-size: 10mm;
+  font-weight: 400;
+  color: #24211b;
+}
+
+.toc-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.toc-entry + .toc-entry {
+  border-top: 0.18mm solid rgba(90, 78, 58, 0.18);
+}
+
+.toc-row {
+  display: grid;
+  grid-template-columns: 11mm minmax(0, 1fr) auto;
+  gap: 4mm;
+  align-items: baseline;
+  padding: 4.2mm 0;
+}
+
+.toc-number {
+  font-family: var(--serif);
+  font-size: 4mm;
+  color: #9b8e77;
+}
+
+.toc-label {
+  font-family: var(--serif);
+  font-size: 5.4mm;
+  color: #2b2720;
+}
+
+.toc-label em {
+  display: block;
+  margin-top: 1.2mm;
+  font-family: var(--sans);
+  font-size: 2.3mm;
+  font-style: normal;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: #918675;
+}
+
+html[data-design-sync="true"] .toc-label em {
+  font-family: var(--font-body);
+}
+
+.toc-plate {
+  font-size: 2.4mm;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #8b8272;
+}
+
+.toc-note {
+  margin: 7mm 0 0;
+  font-size: 2.3mm;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: #a59a87;
+}
+
+/* Chapter dividers ------------------------------------------------------- */
+.chapter-page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12mm;
+  text-align: center;
+}
+
+.chapter-index {
+  margin: 0;
+  font-size: 2.7mm;
+  letter-spacing: 0.38em;
+  text-transform: uppercase;
+  color: #8b8272;
+}
+
+.chapter-title {
+  margin: 6mm 0 2.5mm;
+  font-family: var(--serif);
+  font-size: 14mm;
+  font-weight: 400;
+  line-height: 1.1;
+  color: #24211b;
+}
+
+.chapter-title-en {
+  margin: 0;
+  font-size: 2.6mm;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: #9b8e77;
+}
+
+.chapter-rule {
+  width: 16mm;
+  height: 0.25mm;
+  margin: 8mm auto;
+  background: rgba(90, 78, 58, 0.35);
+}
+
+.chapter-desc {
+  max-width: 90mm;
+  margin: 0;
+  font-size: 3.2mm;
+  line-height: 2;
+  color: #625b50;
+}
+
+.chapter-count {
+  margin: 7mm 0 0;
+  font-size: 2.3mm;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: #a59a87;
+}
+
+/* Photographic plates ---------------------------------------------------- */
+.plate-page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.plate-frame {
+  height: 164mm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.plate-frame img {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.plate-meta {
+  margin-top: 6mm;
+  padding-top: 3.5mm;
+  border-top: 0.18mm solid rgba(90, 78, 58, 0.25);
+}
+
+.plate-label {
+  margin: 0 0 1.8mm;
+  font-size: 2.4mm;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: #8b8272;
+}
+
+.plate-title {
+  margin: 0 0 2.6mm;
+  font-family: var(--serif);
+  font-size: 6.6mm;
+  font-weight: 400;
+  line-height: 1.15;
+  color: #24211b;
+}
+
+.plate-essay {
+  height: 66mm;
+  overflow: hidden;
+  font-family: var(--font-body);
+  font-size: 3.05mm;
+  line-height: 1.72;
+  letter-spacing: 0.01em;
+  color: #4f4940;
+}
+
+.plate-essay p,
+.afterword-body p {
+  margin: 0 0 2.8mm;
+}
+
+.plate-essay strong,
+.afterword-body strong {
+  font-weight: 600;
+  color: #3f3a33;
+}
+
+.plate-essay em,
+.afterword-body em {
+  font-style: italic;
+}
+
+.plate-essay blockquote,
+.afterword-body blockquote {
+  margin: 3mm 0;
+  padding-left: 4mm;
+  border-left: 0.3mm solid #b6a888;
+  color: #756c5f;
+  font-style: italic;
+}
+
+.plate-essay ul,
+.plate-essay ol,
+.afterword-body ul,
+.afterword-body ol {
+  margin: 0 0 2.8mm 5mm;
+  padding: 0;
+}
+
+/* Afterword + colophon --------------------------------------------------- */
+.afterword-page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 4mm;
+}
+
+.afterword-title {
+  margin: 6mm 0 5mm;
+  font-family: var(--serif);
+  font-size: 9mm;
+  font-weight: 400;
+  line-height: 1.2;
+  color: #24211b;
+}
+
+.afterword-body {
+  height: 196mm;
+  overflow: hidden;
+  font-family: var(--font-body);
+  font-size: 3.1mm;
+  line-height: 1.88;
+  color: #4f4940;
+}
+
+.afterword-signature {
+  margin: 6mm 0 0;
+  font-size: 2.7mm;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: #8b8272;
+}
+
+/* Back cover ------------------------------------------------------------- */
+.back-inner {
+  position: absolute;
+  inset: 16mm;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: rgba(233, 223, 201, 0.72);
+}
+
+.back-mark {
+  width: 3mm;
+  height: 3mm;
+  margin-bottom: 8mm;
+  border-radius: 50%;
+  background: var(--foil);
+  box-shadow: 0 0 6mm rgba(203, 182, 141, 0.55);
+}
+
+.back-title {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 4.2mm;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.back-blurb {
+  max-width: 126mm;
+  margin: 10mm 0 0;
+  font-family: var(--font-body);
+  font-size: 3mm;
+  line-height: 1.9;
+  letter-spacing: 0.02em;
+  color: rgba(233, 223, 201, 0.62);
+  overflow-wrap: anywhere;
+}
+
+.back-author {
+  margin: 9mm 0 0;
+  font-family: var(--font-body);
+  font-size: 2.4mm;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(233, 223, 201, 0.55);
+}
+
+.back-author:empty {
+  display: none;
+}
+
+/* Image fallback --------------------------------------------------------- */
+.is-fallback::before {
+  display: none !important;
+  content: none !important;
+}
+
+.is-fallback img {
+  visibility: visible !important;
+  opacity: 1 !important;
+  object-fit: contain;
+}
+
+@media screen {
+  body {
+    padding: 10mm;
+    background: #2a2a28;
+  }
+
+  .sheet {
+    margin: 0 auto 10mm;
+    box-shadow: 0 6mm 16mm rgba(0, 0, 0, 0.45);
+  }
+}
+
+/* Layout-editor sync (rendered only when pdf.sync=true) ------------------ */
+.print-edit-layer {
+  position: absolute;
+  left: 3mm;
+  top: 3mm;
+  width: 240mm;
+  height: 320mm;
+  z-index: 10;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.print-ornament {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: block;
+  transform: translate(-50%, -50%);
+  transform-origin: 0 0;
+  color: rgba(90, 78, 58, 0.42);
+}
+
+.print-ornament svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.print-detached {
+  position: absolute;
+  display: block;
+  margin: 0;
+  z-index: 5;
+}
+
+.sheet--cover .print-ornament,
+.sheet--back .print-ornament {
+  color: rgba(203, 182, 141, 0.62);
+}
+
