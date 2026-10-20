@@ -4,7 +4,7 @@
  */
 "use strict";
 
-const CACHE_NAME = "photo-pwa-v2";
+const CACHE_NAME = "photo-pwa-v3";
 
 const PRECACHE = [
   "./",
