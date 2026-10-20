@@ -1,0 +1,305 @@
+{
+  "schema": "portfolio/v1",
+  "theme": {
+    "preset": "warm",
+    "accent": "#c5b393",
+    "background": "#0f0f0f"
+  },
+  "meta": {
+    "title": "A Glimpse of Trees",
+    "subtitle": "Film photographs of the natural world",
+    "kicker": "A quiet record",
+    "intro_title": "Light, quietly kept.",
+    "intro_text": "Photographs made slowly, on film, in the hours when the landscape asks for nothing. A small archive of weather, water and trees.",
+    "year": "2026",
+    "cover_photo": "10-wind-through-grass",
+    "updated": "2026-10-20",
+    "revision": "2026-10-20T05:48:47.019Z"
+  },
+  "groups": [
+    {
+      "id": "water",
+      "label": "静水与雾",
+      "label_en": "Still Water",
+      "description": "水面、雾，与缓慢的流动。"
+    },
+    {
+      "id": "woods",
+      "label": "林间",
+      "label_en": "Among Trees",
+      "description": "树与树之间漏下来的光。"
+    },
+    {
+      "id": "field",
+      "label": "草野",
+      "label_en": "Open Ground",
+      "description": "草、季节，与低处的时间。"
+    },
+    {
+      "id": "light",
+      "label": "余晖与远山",
+      "label_en": "Late Light",
+      "description": "日落前后的颜色，以及不肯靠近的山。"
+    }
+  ],
+  "photos": [
+    {
+      "id": "01-still-water",
+      "file": "01-still-water-2000.webp",
+      "book_file": "01-still-water-1000.webp",
+      "group": "water",
+      "title": "Still Water",
+      "note": "A surface that keeps the sky for a while.",
+      "essay": [
+        "水面把天空收在里面，像一张没有写完的纸。风停下来的那几分钟，岸上的树只剩下倒影，世界安静得能听见自己在看。",
+        "我按下快门时并没有想留住什么。水会继续流动，云会换一个方向，照片只是替那一刻作证：静，曾经真实存在。",
+        "后来我常想起这片水。它不回答任何问题，却让人愿意把问题先放下。"
+      ],
+      "alt": "A surface that keeps the sky for a while.",
+      "width": 1000,
+      "height": 985,
+      "orientation": "landscape"
+    },
+    {
+      "id": "02-morning-haze",
+      "file": "02-morning-haze-2000.webp",
+      "book_file": "02-morning-haze-1000.webp",
+      "group": "water",
+      "title": "Morning Haze",
+      "note": "The hour before the valley decides to wake.",
+      "essay": [
+        "山谷醒得很慢。雾先漫过低处的草，再一点点爬上树腰，把远处的轮廓擦成铅笔的灰。",
+        "清晨的光没有颜色，只有温度。它落在镜头上，也落在还未完全清醒的心里。",
+        "我等着雾散，又希望它慢一点。照片记下的，是等待本身的形状。"
+      ],
+      "alt": "The hour before the valley decides to wake.",
+      "width": 1000,
+      "height": 985,
+      "orientation": "landscape"
+    },
+    {
+      "id": "05-quiet-current",
+      "file": "05-quiet-current-2000.webp",
+      "book_file": "05-quiet-current-1000.webp",
+      "group": "water",
+      "title": "Quiet Current",
+      "note": "A river moving without any need to be heard.",
+      "essay": [
+        "河水的声音很轻，轻到需要停下来才能听见。它绕过石头，不问方向，也不回头。",
+        "岸上的人总想给河流一个目的。河流只是流，把时间带向下游，把石头磨圆。",
+        "我把快门放得很慢，让水在底片上留下一点模糊。那一点模糊，就是它本来的样子。"
+      ],
+      "alt": "A river moving without any need to be heard.",
+      "width": 1000,
+      "height": 825,
+      "orientation": "landscape"
+    },
+    {
+      "id": "04-between-pines",
+      "file": "04-between-pines-2000.webp",
+      "book_file": "04-between-pines-1000.webp",
+      "group": "woods",
+      "title": "Between Pines",
+      "note": "Light arrives in narrow, vertical pieces.",
+      "essay": [
+        "光从树干之间落下来，被切成一条一条。每一条都短暂，落在苔藓上，又立刻移开。",
+        "松林里没有真正的安静，只有被压低的声音：针叶摩擦、远处的水、自己的脚步。",
+        "我沿着缝隙往里走。照片留下的不是路，而是穿过路的光。"
+      ],
+      "alt": "Light arrives in narrow, vertical pieces.",
+      "width": 1000,
+      "height": 825,
+      "orientation": "landscape"
+    },
+    {
+      "id": "09-edge-of-the-wood",
+      "file": "09-edge-of-the-wood-2000.webp",
+      "book_file": "09-edge-of-the-wood-1000.webp",
+      "group": "woods",
+      "title": "Edge of the Wood",
+      "note": "Where the trees stop and the weather begins.",
+      "essay": [
+        "树林在这里停下。再往前，是风、是天、是没有遮挡的天气。",
+        "边缘总是最不安的地方。树木向外探出枝条，像是试探，又像是告别。",
+        "我站在林缘，一半在阴影里，一半在光里。快门按下的瞬间，两种天气同时留在了画面里。"
+      ],
+      "alt": "Where the trees stop and the weather begins.",
+      "width": 1000,
+      "height": 669,
+      "orientation": "landscape"
+    },
+    {
+      "id": "06-after-the-rain",
+      "file": "06-after-the-rain-2000.webp",
+      "book_file": "06-after-the-rain-1000.webp",
+      "group": "woods",
+      "title": "After the Rain",
+      "note": "Every leaf carrying more than its own weight.",
+      "essay": [
+        "雨停之后，每一片叶子都沉了一点。水珠挂在叶尖，迟迟不肯落下，像一句没有说完的话。",
+        "空气里有泥土和树皮的气味。光线从云后透出来，不亮，却让所有颜色都醒了一次。",
+        "我拍下这场雨留下的重量。它很快就会消失，但照片里，叶子仍然弯着。"
+      ],
+      "alt": "Every leaf carrying more than its own weight.",
+      "width": 1000,
+      "height": 825,
+      "orientation": "landscape"
+    },
+    {
+      "id": "10-wind-through-grass",
+      "file": "10-wind-through-grass-2000.webp",
+      "book_file": "10-wind-through-grass-1000.webp",
+      "group": "woods",
+      "title": "Wind Through Grass",
+      "note": "A sound you feel before you hear it.",
+      "essay": [
+        "草比人更早知道风要来。它们先弯下去，然后一整片一起摇动，像海，却没有声音。",
+        "我举起相机时，风正从画面左边经过。草叶的尖端被吹向右边，留下一个看不见的方向。",
+        "照片无法记录声音，但每次看它，我都能听见那片草。"
+      ],
+      "alt": "A sound you feel before you hear it.",
+      "width": 669,
+      "height": 1000,
+      "orientation": "portrait"
+    },
+    {
+      "id": "03-the-long-field",
+      "file": "03-the-long-field-2000.webp",
+      "book_file": "03-the-long-field-1000.webp",
+      "group": "field",
+      "title": "The Long Field",
+      "note": "Grass leaning into one slow direction.",
+      "essay": [
+        "草向同一个方向倾斜，像有人从很远的地方走过，留下看不见的痕迹。",
+        "这块田没有边界。风来的时候，整片地面一起呼吸；风走以后，谁也不承认刚才动过。",
+        "我站在田边，忽然明白辽阔不是空，而是允许万物各自缓慢。"
+      ],
+      "alt": "Grass leaning into one slow direction.",
+      "width": 1000,
+      "height": 816,
+      "orientation": "landscape"
+    },
+    {
+      "id": "08-a-slow-season",
+      "file": "08-a-slow-season-2000.webp",
+      "book_file": "08-a-slow-season-1000.webp",
+      "group": "field",
+      "title": "A Slow Season",
+      "note": "Nothing hurries in the undergrowth.",
+      "essay": [
+        "林下的一切都在慢慢进行。蘑菇顶开落叶，藤蔓绕过石头，苔藓一寸一寸地铺开。",
+        "这里没有值得抓紧的事。生长和腐烂挨得很近，谁也不比谁更着急。",
+        "我把镜头放低，靠近地面。照片里的时间是慢的，慢到可以听见它经过。"
+      ],
+      "alt": "Nothing hurries in the undergrowth.",
+      "width": 1000,
+      "height": 669,
+      "orientation": "landscape"
+    },
+    {
+      "id": "11-first-frost",
+      "file": "11-first-frost-2000.webp",
+      "book_file": "11-first-frost-1000.webp",
+      "group": "field",
+      "title": "First Frost",
+      "note": "The ground remembering the shape of the night.",
+      "essay": [
+        "霜落在草叶上，把夜晚的形状留了下来。天亮以后，地面像被谁轻轻撒了一层盐。",
+        "这是秋天第一次真正的冷。空气收紧，颜色变淡，所有柔软的东西都有了边缘。",
+        "我蹲下来拍那些细小的白。它们很快就会化掉，但在照片里，夜晚还没有结束。"
+      ],
+      "alt": "The ground remembering the shape of the night.",
+      "width": 1000,
+      "height": 669,
+      "orientation": "landscape"
+    },
+    {
+      "id": "07-low-light",
+      "file": "07-low-light-2000.webp",
+      "book_file": "07-low-light-1000.webp",
+      "group": "light",
+      "title": "Low Light",
+      "note": "What remains visible when the day gives up.",
+      "essay": [
+        "天色暗下来以后，世界并没有立刻消失。树还站在原处，只是把自己交给了影子。",
+        "低光里的颜色很少，近于黑白。眼睛需要更久才能看清，而看清之后，反而不确定那是不是原来的样子。",
+        "我喜欢这段将暗未暗的时间。它像一天最后的犹豫，也像所有告别之前短暂的停顿。"
+      ],
+      "alt": "What remains visible when the day gives up.",
+      "width": 1000,
+      "height": 825,
+      "orientation": "landscape"
+    },
+    {
+      "id": "12-distant-ridge",
+      "file": "12-distant-ridge-2000.webp",
+      "book_file": "12-distant-ridge-1000.webp",
+      "group": "light",
+      "title": "Distant Ridge",
+      "note": "A line of blue that refuses to come closer.",
+      "essay": [
+        "远处的山是一层蓝，比天空深，比近处的树浅。它一直在那里，却从不靠近。",
+        "我试着用长焦把它拉近，结果只是让它变得更平。距离并不会因为镜头而消失。",
+        "最后我放下相机，看了一会儿。照片留下的，是我看它的方式，而不是它本身。"
+      ],
+      "alt": "A line of blue that refuses to come closer.",
+      "width": 669,
+      "height": 1000,
+      "orientation": "portrait"
+    },
+    {
+      "id": "13-last-light",
+      "file": "13-last-light-2000.webp",
+      "book_file": "13-last-light-1000.webp",
+      "group": "light",
+      "title": "Last Light",
+      "note": "The last warm minute held above the treeline.",
+      "essay": [
+        "太阳落到树线后面，最后一点暖色停在树梢上。再过几分钟，颜色就会被夜色收走。",
+        "这段时间很短，短到不够调整一次构图。我只能凭感觉按下快门，然后看着光离开。",
+        "照片里那一点暖，是一天最后的坚持。它提醒我，结束也可以很轻。"
+      ],
+      "alt": "The last warm minute held above the treeline.",
+      "width": 1000,
+      "height": 985,
+      "orientation": "landscape"
+    }
+  ],
+  "book_afterword": {
+    "title": "关于这本影集",
+    "body": [
+      "这些照片大多拍摄于没有计划的路上。我背着相机走进林子、田地和河岸，等光慢慢改变，等雾散开，或者等一场雨停下来。它们不是某个地方的完整记录，只是我在那些时刻看见的一小部分。",
+      "我习惯用胶片拍摄。它让我慢下来，也让我接受不完美：轻微的偏色、无法预知的颗粒、按下快门之后仍然存在的迟疑。这些照片保留着那些迟疑，它们并不急着说明什么。",
+      "整理成书的过程，是一次重新观看。原本散落在不同时间里的画面，被放进四个章节：静水与雾、林间、草野、余晖与远山。分组不是分类，更像呼吸的节奏——在靠近与退开之间，给每一张照片留出位置。",
+      "如果这本影集有什么想说的话，大概是：自然并不需要被解释。我们只是偶尔经过，偶尔看见，然后把看见的东西安静地留下来。"
+    ],
+    "signature": "A Glimpse of Trees · 2026"
+  },
+  "book_settings": {
+    "cover": {
+      "title": "A Glimpse of Trees",
+      "subtitle": "Film photographs of the natural world",
+      "author": "",
+      "color": "#1d2a22",
+      "image": "",
+      "kicker": "Photographs",
+      "photo": "",
+      "photo_custom": "",
+      "layout": "framed"
+    },
+    "paper": {
+      "color": "#f5f2eb",
+      "texture": "light"
+    },
+    "type": {
+      "heading": "playfair",
+      "body": "inter"
+    },
+    "scene": {
+      "background": "wood"
+    },
+    "pdf": {
+      "sync": false
+    }
+  }
+}

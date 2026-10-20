@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A Glimpse of Trees — a quiet collection of film photographs of the natural world.">
+  <meta name="theme-color" content="#0f0f0f">
+  <title>A Glimpse of Trees — Film Photography</title>
+
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="apple-touch-icon" href="./assets/icons/icon-180.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="摄影集">
+  <link rel="preload" href="./assets/fonts/PlayfairDisplay-var.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="./assets/fonts/Inter-var.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="./css/style.css">
+  <link rel="stylesheet" href="./lib/quill.snow.css">
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="scroll-progress" aria-hidden="true"><span id="scrollBar"></span></div>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <p class="header-side header-side--left">Est. 2026</p>
+      <a class="logo" href="#top" aria-label="A Glimpse of Trees, back to top">A Glimpse of Trees</a>
+      <div class="header-right">
+        <p class="header-side header-side--right">Film / Nature</p>
+        <button class="admin-toggle" id="adminToggle" type="button" aria-pressed="false">
+          <span class="admin-toggle-icon" aria-hidden="true">🔒</span>
+          <span class="admin-toggle-label">管理员模式</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="editor-bar" id="editorBar" hidden>
+    <div class="backup-warning" id="backupWarning" role="alert">
+      <p class="backup-warning-text">
+        <strong>⚠️ 注意：您的作品集数据仅保存在当前设备的浏览器中。</strong>
+        清理浏览器缓存、更换设备会导致数据永久丢失！请务必定期导出备份。
+      </p>
+      <div class="backup-warning-actions">
+        <button class="backup-button" id="exportBackupBtn" type="button">📦 导出备份</button>
+        <button class="backup-button" id="importBackupBtn" type="button">📥 导入备份</button>
+        <input id="importFile" type="file" accept=".json,application/json" hidden>
+      </div>
+    </div>
+    <div class="editor-status-wrap">
+      <p class="editor-status" id="editorStatus">编辑模式：点击文字修改，拖动照片调整分组</p>
+      <p class="editor-hint">修改会自动保存到本机浏览器数据库（IndexedDB）</p>
+    </div>
+    <div class="editor-actions">
+      <button class="editor-button editor-button--primary" id="addPhotoBtn" type="button">＋ 添加新照片</button>
+      <button class="editor-button" id="groupsBtn" type="button">分组管理</button>
+      <button class="editor-button" id="layoutBtn" type="button">自由排版</button>
+      <button class="editor-button editor-button--quiet" id="resetLayoutBtn" type="button" hidden>清除排版</button>
+      <button class="editor-button" id="boardBtn" type="button">排版总览</button>
+      <button class="editor-button" id="themeBtn" type="button">配色方案</button>
+      <button class="editor-button" id="helpBtn" type="button">编辑说明</button>
+      <button class="editor-button editor-button--primary" id="saveBtn" type="button">保存</button>
+      <button class="editor-button editor-button--quiet" id="discardBtn" type="button">重新载入</button>
+    </div>
+  </div>
+
+  <div class="layout-bar" id="layoutBar" hidden>
+    <div class="layout-bar-info">
+      <span class="layout-bar-title" id="layoutSelection">点击照片后可旋转 / 缩放</span>
+      <span class="layout-bar-tip">拖动 ⠿ 移动 · 滚轮或 ↑↓ 上下滚动 · 右下角圆点调宽度</span>
+    </div>
+    <label class="layout-slider">
+      旋转
+      <input id="rotateRange" type="range" min="-180" max="180" step="1" value="0">
+      <span id="rotateValue">0°</span>
+    </label>
+    <label class="layout-slider">
+      缩放
+      <input id="scaleRange" type="range" min="40" max="200" step="1" value="100">
+      <span id="scaleValue">100%</span>
+    </label>
+    <button class="editor-button editor-button--quiet" id="resetTransformBtn" type="button">重置旋转缩放</button>
+  </div>
+
+  <main id="top">
+    <section class="intro" aria-labelledby="introTitle">
+      <div class="intro-grid">
+        <p class="eyebrow">No. 01 — A quiet record</p>
+        <h1 class="intro-title" id="introTitle">Light,<br><em>quietly</em> kept.</h1>
+        <div class="intro-foot">
+          <p class="intro-text" id="introText">
+            Photographs made slowly, on film, in the hours when the landscape
+            asks for nothing. A small archive of weather, water and trees.
+          </p>
+          <a class="scroll-cue" href="#gallery">
+            <span>Enter the archive</span>
+            <svg viewBox="0 0 12 28" aria-hidden="true">
+              <path d="M6 0v26M1 21l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1"/>
+            </svg>
+          </a>
+        </div>
+        <p class="intro-count" id="introCount" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <section class="gallery-section" id="gallery" aria-label="Photographic plates">
+      <div class="section-head">
+        <p class="eyebrow">The archive</p>
+        <p class="section-note">Selected frames, arranged as they were remembered.</p>
+      </div>
+      <div class="gallery" id="galleryGrid"></div>
+      <noscript><p class="noscript">Please enable JavaScript to view the photographs.</p></noscript>
+    </section>
+
+    <section class="outro" aria-labelledby="outroTitle">
+      <p class="eyebrow">End of archive</p>
+      <h2 id="outroTitle">The forest keeps<br>its own time.</h2>
+      <p class="outro-text">
+        All plates were photographed on film and scanned without cropping.
+        Colour is left as the emulsion recorded it.
+      </p>
+      <a class="back-top" href="#top">Back to the beginning <span aria-hidden="true">↑</span></a>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>© 2026 A Glimpse of Trees</p>
+    <p class="footer-mid">35mm &amp; 120 film · Scanned locally</p>
+    <p>Set in Playfair Display &amp; Inter</p>
+  </footer>
+
+  <!-- Full-screen photograph + long-form essay ----------------------------- -->
+  <div class="detail" id="detail" role="dialog" aria-modal="true" aria-label="Photograph and essay" aria-hidden="true">
+    <button class="detail-close" id="detailClose" type="button" aria-label="Close detail view">
+      <span aria-hidden="true"></span><span aria-hidden="true"></span>
+    </button>
+
+    <div class="detail-layout">
+      <figure class="detail-media">
+        <div class="detail-frame" id="detailFrame">
+          <img class="detail-image" id="detailImage" src="" alt="">
+          <img class="detail-image" id="detailImageAlt" src="" alt="" aria-hidden="true">
+        </div>
+        <figcaption class="detail-media-foot">
+          <span class="detail-counter" id="detailCounter"></span>
+          <span class="detail-group" id="detailGroup"></span>
+        </figcaption>
+      </figure>
+
+      <article class="detail-panel">
+        <p class="detail-kicker" id="detailKicker"></p>
+        <h2 class="detail-title" id="detailTitle" data-detail-field="title"></h2>
+        <p class="detail-note" id="detailNote" data-detail-field="note"></p>
+        <div class="detail-essay" id="detailEssay"></div>
+        <button class="detail-edit-essay" id="editEssayBtn" type="button">编辑长文</button>
+        <p class="detail-hint">← → 浏览 · ESC 关闭</p>
+      </article>
+    </div>
+
+    <button class="detail-nav detail-nav--prev" id="detailPrev" type="button" aria-label="Previous photograph">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M13 2 4 10l9 8" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+    </button>
+    <button class="detail-nav detail-nav--next" id="detailNext" type="button" aria-label="Next photograph">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7 2 9 8-9 8" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+    </button>
+  </div>
+
+  <!-- Add photograph ------------------------------------------------------- -->
+  <div class="modal" id="addPhotoModal" hidden>
+    <div class="modal-card modal-card--wide" role="dialog" aria-modal="true" aria-labelledby="addPhotoTitle">
+      <button class="modal-close" id="addPhotoClose" type="button" aria-label="Close">×</button>
+      <p class="modal-kicker">New plates</p>
+      <h2 class="modal-title" id="addPhotoTitle">添加新照片</h2>
+      <p class="modal-lead">从本机选择图片：自动压缩为 WebP 并写入浏览器数据库；也可以从内置示例图片中勾选。</p>
+      <form class="editor-form" id="addPhotoForm">
+        <label class="field upload-field">
+          <span class="field-label">从本机上传（可多选，单张 ≤ 50 MB）</span>
+          <input class="field-input file-input" id="photoFileInput" type="file" accept="image/*" multiple>
+        </label>
+        <div class="upload-preview" id="uploadPreview" hidden></div>
+        <div class="picker-toolbar">
+          <span class="picker-status" id="pickerStatus">内置示例图片</span>
+          <button class="picker-refresh" id="pickerRefresh" type="button">刷新列表</button>
+        </div>
+        <div class="picker" id="photoPicker"></div>
+        <div class="field-row">
+          <label class="field">
+            <span class="field-label">加入分组</span>
+            <select class="field-input" name="group" id="addPhotoGroup"></select>
+          </label>
+          <button class="editor-button" id="addPhotoNewGroup" type="button">＋ 新建分组</button>
+        </div>
+        <div class="modal-actions">
+          <button class="editor-button editor-button--quiet" id="addPhotoCancel" type="button">取消</button>
+          <button class="editor-button editor-button--primary" id="addPhotoSubmit" type="submit" disabled>导入所选</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Layout board ---------------------------------------------------------- -->
+  <div class="modal" id="boardModal" hidden>
+    <div class="modal-card modal-card--full" role="dialog" aria-modal="true" aria-labelledby="boardTitle">
+      <button class="modal-close" id="boardClose" type="button" aria-label="Close">×</button>
+      <p class="modal-kicker">Layout board</p>
+      <h2 class="modal-title" id="boardTitle">排版总览</h2>
+      <p class="modal-lead">所有章节按真实比例缩小显示。拖动缩略图调整位置，拖到其它章节画布即可换组（空章节也能放入）；拖右下角方块调宽度，点击缩略图后用底部滑杆旋转 / 缩放。修改即时生效并保存。</p>
+      <div class="board" id="board"></div>
+      <div class="modal-actions">
+        <button class="editor-button editor-button--primary" id="boardDone" type="button">完成</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Group manager --------------------------------------------------------- -->
+  <div class="modal" id="groupsModal" hidden>
+    <div class="modal-card modal-card--wide" role="dialog" aria-modal="true" aria-labelledby="groupsTitle">
+      <button class="modal-close" id="groupsClose" type="button" aria-label="Close">×</button>
+      <p class="modal-kicker">Chapters</p>
+      <h2 class="modal-title" id="groupsTitle">分组管理</h2>
+      <p class="modal-lead">拖动 ⠿ 调整章节顺序；Chapter 01、02… 与照片编号会自动同步。删除分组时，里面的照片会移到第一个分组。</p>
+      <div class="group-manager" id="groupList"></div>
+      <div class="group-manager-foot">
+        <button class="editor-button" id="addGroupBtn" type="button">＋ 新增分组</button>
+        <span class="group-manager-hint">改完名称按 Enter 或点击空白处生效</span>
+      </div>
+      <div class="modal-actions">
+        <button class="editor-button editor-button--primary" id="groupsDone" type="button">完成</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Long-form essay editor ------------------------------------------------ -->
+  <div class="modal" id="essayModal" hidden>
+    <div class="modal-card modal-card--wide" role="dialog" aria-modal="true" aria-labelledby="essayTitle">
+      <button class="modal-close" id="essayClose" type="button" aria-label="Close">×</button>
+      <p class="modal-kicker">Long-form</p>
+      <h2 class="modal-title" id="essayTitle">编辑长文</h2>
+      <p class="modal-lead">支持加粗、斜体、分段、引用与列表；保存为 HTML，线上详情页与实体书会同步渲染。</p>
+      <div class="essay-editor" id="essayEditor"></div>
+      <div class="modal-actions">
+        <button class="editor-button editor-button--quiet" id="essayCancel" type="button">取消</button>
+        <button class="editor-button editor-button--primary" id="essayDone" type="button">应用</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin guide ---------------------------------------------------------- -->
+  <div class="modal" id="helpModal" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+      <button class="modal-close" id="helpClose" type="button" aria-label="Close">×</button>
+      <p class="modal-kicker">Admin guide</p>
+      <h2 class="modal-title" id="helpTitle">管理员使用说明</h2>
+      <p class="modal-lead">管理员模式的所有修改都会自动保存到当前浏览器的 IndexedDB 数据库；这里没有服务器，也不会同步到其它设备。</p>
+
+      <div class="help-block">
+        <h3>1 · 修改文案与长文</h3>
+        <p>点击照片下方的短标题或悬停小字，直接输入；打开大图后可编辑标题与注释。长文点右侧「编辑长文」，在富文本编辑器里加粗、斜体、分段、引用或列表。点击空白处或按 Esc 保存到本机数据库。</p>
+      </div>
+      <div class="help-block">
+        <h3>2 · 调整分组与照片</h3>
+        <p>拖动照片右上角的 ⠿ 手柄到其他分组；× 移除照片。点「＋ 添加新照片」可从本机上传（自动压缩为 WebP），或从内置示例图片中勾选后一次导入同一分组。</p>
+        <p>「分组管理」可新增、重命名、排序或删除章节，Chapter 01、02… 与照片编号会自动同步。</p>
+        <p>每张照片左下角有「分组」下拉框（即之前看到的 1/2 等选项）：显示当前分组，切换后照片立刻移到该分组，其它照片会自动让位、页面重新排布。</p>
+        <p>按住 ⠿ 左键拖动照片；拖动过程中用<b>鼠标滚轮</b>上下滚动页面（不再自动滚动，避免页面抽动）。经过其它章节的分界线并进入其照片区域时，该章节会高亮，松手即完成换组。</p>
+      </div>
+      <div class="help-block">
+        <h3>3 · 自由排版与旋转缩放</h3>
+        <p>点「自由排版」开启：拖动任意照片右上角 ⠿ 可自由移动位置，拖动照片右下角圆点可调整宽度；所有照片按分组画布自由叠放，访客看到的也是这个排版。</p>
+        <p>点击任意照片后，屏幕底部会出现滑杆：<b>旋转</b> −180°～180°、<b>缩放</b> 40%～200%，可即时预览并保存；「重置旋转缩放」恢复 0° / 100%。旋转缩放只作用于作品卡片，<b>不会影响打开大图后的显示</b>。</p>
+        <p>「排版总览」把所有章节按真实比例缩小成一张总览板：拖缩略图调位置、拖右下角方块调宽度、点击后用同样的滑杆旋转缩放，适合在不放大的情况下整体调整；<b>把缩略图拖到其它章节的画布上即可直接换组</b>，空章节也可以放入。</p>
+        <p>「清除排版」会恢复默认的杂志式排列（只删位置与旋转缩放，不删照片和文字）；「退出自由排版」只是停止编辑，排版结果仍会保留。</p>
+      </div>
+      <div class="help-block">
+        <h3>4 · 备份与恢复</h3>
+        <p>管理员面板顶部的【📦 导出备份】会把完整数据（含照片）打包为 JSON 下载；【📥 导入备份】会用所选文件覆盖当前设备上的全部数据，导入前请先导出旧备份。</p>
+        <p>清理浏览器缓存、使用无痕窗口或更换设备都会导致数据丢失，请定期导出并把 JSON 保存到其它位置。</p>
+      </div>
+      <div class="help-block">
+        <h3>5 · 撤销与重做</h3>
+        <p>结构调整（导入、删除、拖拽换组）和文字编辑都支持 <b>Ctrl + Z</b> 撤销、<b>Ctrl + Shift + Z</b> 或 <b>Ctrl + Y</b> 重做；在输入框内仍使用系统原生撤销。</p>
+      </div>
+      <p class="modal-note">配色方案只影响作品集外观；所有修改都保存在当前浏览器，请记得定期导出备份。</p>
+      <div class="modal-actions">
+        <button class="editor-button editor-button--primary" id="helpDone" type="button">开始编辑</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Theme palette -------------------------------------------------------- -->
+  <div class="modal" id="themeModal" hidden>
+    <div class="modal-card modal-card--wide" role="dialog" aria-modal="true" aria-labelledby="themeTitle">
+      <button class="modal-close" id="themeClose" type="button" aria-label="Close">×</button>
+      <p class="modal-kicker">Appearance</p>
+      <h2 class="modal-title" id="themeTitle">配色方案</h2>
+      <p class="modal-lead">选择预设或自定义强调色、背景色，页面会立即预览。配色会写入本机数据库的 <code>theme</code> 字段。</p>
+
+      <div class="theme-presets" id="themePresets"></div>
+
+      <div class="theme-custom">
+        <label class="field">
+          <span class="field-label">强调色 / 链接与高亮</span>
+          <input class="color-input" id="accentColor" type="color" value="#c5b393">
+        </label>
+        <label class="field">
+          <span class="field-label">页面背景色</span>
+          <input class="color-input" id="bgColor" type="color" value="#0f0f0f">
+        </label>
+      </div>
+
+      <div class="theme-preview" id="themePreview" aria-hidden="true">
+        <span class="theme-preview-title">Light, quietly kept.</span>
+        <span class="theme-preview-rule"></span>
+        <span class="theme-preview-note">预览：标题、正文与强调色</span>
+      </div>
+
+      <div class="modal-actions">
+        <button class="editor-button editor-button--quiet" id="themeReset" type="button">恢复默认</button>
+        <button class="editor-button editor-button--primary" id="themeDone" type="button">完成</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="./lib/quill.js"></script>
+  <script src="./lib/Sortable.min.js"></script>
+  <script src="./js/storage.js"></script>
+  <script src="./js/image-tools.js"></script>
+  <script src="./js/pwa.js"></script>
+  <script src="./js/main.js"></script>
+</body>
+</html>

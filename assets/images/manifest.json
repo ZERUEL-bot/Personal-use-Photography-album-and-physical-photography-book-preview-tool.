@@ -1,0 +1,95 @@
+{
+  "images": [
+    {
+      "file": "01-still-water-2000.webp",
+      "thumb": "01-still-water-1000.webp",
+      "width": 2000,
+      "height": 1970,
+      "orientation": "landscape"
+    },
+    {
+      "file": "02-morning-haze-2000.webp",
+      "thumb": "02-morning-haze-1000.webp",
+      "width": 2000,
+      "height": 1970,
+      "orientation": "landscape"
+    },
+    {
+      "file": "03-the-long-field-2000.webp",
+      "thumb": "03-the-long-field-1000.webp",
+      "width": 2000,
+      "height": 1632,
+      "orientation": "landscape"
+    },
+    {
+      "file": "04-between-pines-2000.webp",
+      "thumb": "04-between-pines-1000.webp",
+      "width": 2000,
+      "height": 1651,
+      "orientation": "landscape"
+    },
+    {
+      "file": "05-quiet-current-2000.webp",
+      "thumb": "05-quiet-current-1000.webp",
+      "width": 2000,
+      "height": 1651,
+      "orientation": "landscape"
+    },
+    {
+      "file": "06-after-the-rain-2000.webp",
+      "thumb": "06-after-the-rain-1000.webp",
+      "width": 2000,
+      "height": 1651,
+      "orientation": "landscape"
+    },
+    {
+      "file": "07-low-light-2000.webp",
+      "thumb": "07-low-light-1000.webp",
+      "width": 2000,
+      "height": 1651,
+      "orientation": "landscape"
+    },
+    {
+      "file": "08-a-slow-season-2000.webp",
+      "thumb": "08-a-slow-season-1000.webp",
+      "width": 2000,
+      "height": 1338,
+      "orientation": "landscape"
+    },
+    {
+      "file": "09-edge-of-the-wood-2000.webp",
+      "thumb": "09-edge-of-the-wood-1000.webp",
+      "width": 2000,
+      "height": 1338,
+      "orientation": "landscape"
+    },
+    {
+      "file": "10-wind-through-grass-2000.webp",
+      "thumb": "10-wind-through-grass-1000.webp",
+      "width": 1338,
+      "height": 2000,
+      "orientation": "portrait"
+    },
+    {
+      "file": "11-first-frost-2000.webp",
+      "thumb": "11-first-frost-1000.webp",
+      "width": 2000,
+      "height": 1338,
+      "orientation": "landscape"
+    },
+    {
+      "file": "12-distant-ridge-2000.webp",
+      "thumb": "12-distant-ridge-1000.webp",
+      "width": 1338,
+      "height": 2000,
+      "orientation": "portrait"
+    },
+    {
+      "file": "13-last-light-2000.webp",
+      "thumb": "13-last-light-1000.webp",
+      "width": 2000,
+      "height": 1970,
+      "orientation": "landscape"
+    }
+  ]
+}
